@@ -20,8 +20,7 @@ export default class MarioScene extends Phaser.Scene {
         this.load.image('right', 'assets/right.png');
         this.load.image('up', 'assets/up.png');
         // Sonido
-        this.load.audio('jumpSound', 'assets/sfx/C_MELMAN.mp3')
-        this.load.audio('impactSound', 'assets/sfx/Saul Goodman dice XD.mp3')
+        this.load.audio('mariomusic', 'assets/sfx/mario.m4a')
     }
 
     create() {
@@ -57,8 +56,8 @@ export default class MarioScene extends Phaser.Scene {
         this.physics.add.collider(this.cocodrile, this.floor);
 
         // Audio
-        this.jumpSound = this.sound.add('jumpSound');
-        this.impactSound = this.sound.add('impactSound');
+        this.music = this.sound.add('mariomusic');
+        this.music.play();
 
         this.way = 0;
 
@@ -118,7 +117,6 @@ export default class MarioScene extends Phaser.Scene {
 
     jump() {
         if (this.cocodrile.body.onFloor()){
-            this.jumpSound.play();
             this.cocodrile.body.setVelocityY(-Math.sqrt(this.physics.config.gravity.y*this.cocodrile.height)); // salta 5xL
         }
     }
@@ -137,7 +135,8 @@ export default class MarioScene extends Phaser.Scene {
         	}
 
         	else {
-        		   this.scene.start('cinematicScene', {key:'muelto', next:'cinematicScene', nextData:{key:'gd', next: 'GDScene'}});
+    			this.music.stop();
+    		   this.scene.start('cinematicScene', {key:'muelto', next:'cinematicScene', nextData:{key:'gd', next: 'GDScene'}});
         	}
         });
 
@@ -152,6 +151,7 @@ export default class MarioScene extends Phaser.Scene {
                 this.enemyCounter++;
                 if (this.enemyCounter >= 4) {
                     // pausar jogo
+    				this.music.stop();
                     this.scene.start('cinematicScene', {key:'marieado', next:'cinematicScene', nextData:{key:'gd', next: 'GDScene'}});
                 }
             }

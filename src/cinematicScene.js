@@ -12,7 +12,6 @@ export default class CinematicScene extends Phaser.Scene {
         this.cinematicKey = data.key;
         this.nextScene = data.next;
         this.nextData = data.nextData;
-        console.log(this.nextScene, this.nextData);
 	}
 
     preload(){
@@ -25,7 +24,7 @@ export default class CinematicScene extends Phaser.Scene {
         const height = this.scale.height;
 
         // Reproducimos la cinemática
-        this.cinematic = this.add.video(width / 2, height / 7 * 3, this.cinematicKey).setScale(0.6, 0.6);
+        this.cinematic = this.add.video(width / 2, height / 2, this.cinematicKey).setScale(2);
         this.cinematic.on('complete', ()=>{this.goToNextScene();});
         this.cinematic.play();
 

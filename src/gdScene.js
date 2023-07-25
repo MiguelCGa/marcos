@@ -13,12 +13,11 @@ export default class GDScene extends Phaser.Scene {
     preload() {
         // Imagenes
         this.load.spritesheet('cocodrile2', 'assets/gdmarcos.png', {frameWidth: 478, frameHeight: 478});
-        this.load.image('enemy', 'assets/pinchos.jpg');
+        this.load.image('enemy2', 'assets/pinchos.jpg');
         this.load.image('floor', 'assets/floor.png');
         this.load.image('sky', 'assets/Betanzos.jpg');
         // Sonido
-        this.load.audio('jumpSound', 'assets/sfx/C_MELMAN.mp3');
-        this.load.audio('impactSound', 'assets/sfx/Saul Goodman dice XD.mp3');
+        this.load.audio('gdmusic', 'assets/sfx/gd.m4a');
     }
 
     create() {
@@ -29,19 +28,17 @@ export default class GDScene extends Phaser.Scene {
         // Fondo
         this.parallaxScrolling();
 
-        console.log('a');
 
         // Animacion cocodrilo
         this.cocodrile2 = this.add.sprite(width/4, height*3/4, 'cocodrile2');
         this.cocodrile2.setScale(0.2);
         // Animacion de correr
         this.anims.create({
-            key: 'run',
+            key: 'run2',
             frames: this.anims.generateFrameNumbers('cocodrile2', {start: 0, end: 1}),
             frameRate: 5,
             repeat: -1
         });
-        console.log('b');
         // Animacion de salto arriba
         this.anims.create({
             key: 'jump_up',
@@ -57,9 +54,8 @@ export default class GDScene extends Phaser.Scene {
             repeat: -1
         });
         // Por predeterminado corre
-        this.cocodrile2.play('run');
+        this.cocodrile2.play('run2');
 
-        console.log('c');
         // Suelo
         this.floor = this.add.image(width/2, height, 'floor');
 
@@ -72,8 +68,8 @@ export default class GDScene extends Phaser.Scene {
         this.physics.add.collider(this.cocodrile2, this.floor);
 
         // Audio
-        this.jumpSound = this.sound.add('jumpSound');
-        this.impactSound = this.sound.add('impactSound');
+        this.music = this.sound.add('gdmusic');
+        this.music.play();
     }
 
 
@@ -101,26 +97,25 @@ export default class GDScene extends Phaser.Scene {
         if (this.cocodrile2.body.velocity.y < 0) this.cocodrile2.play('jump_up');
         else if (this.cocodrile2.body.velocity.y > 0) {
             this.cocodrile2.play('jump_down');
-            //this.jumpSound.stop();
         }
-        else if (this.cocodrile2.anims.getName() !== 'run') this.cocodrile2.play('run');
+        else if (this.cocodrile2.anims.getName() !== 'run2') this.cocodrile2.play('run2');
     }
 
     jump() {
         if (this.cocodrile2.body.onFloor()){
-            this.jumpSound.play();
             this.cocodrile2.body.setVelocityY(-Math.sqrt(this.physics.config.gravity.y*this.cocodrile2.height)); // salta 5xL
         }
     }
 
     createEnemy() {
         
-        let enemy = this.add.image(this.scale.width, this.scale.height/4*3, 'enemy');
+        let enemy = this.add.image(this.scale.width, this.scale.height/4*3, 'enemy2');
         enemy.setScale(0.25);
         this.physics.add.existing(enemy);
         // Le añadimos colision entre cocodrilo y el suelo
         this.physics.add.collider(enemy, this.floor);
         this.physics.add.collider(enemy, this.cocodrile2, () => {
+            this.music.stop();
             this.scene.start('cinematicScene', {key:'troliado', next:'cinematicScene', nextData:{key:'final', next: 'JaviMenu'}});
         });
 
@@ -136,6 +131,7 @@ export default class GDScene extends Phaser.Scene {
                 this.enemyCounter++;
                 if (this.enemyCounter >= 4) {
                     // pausar jogo
+                    this.music.stop();
                     this.scene.start('cinematicScene', {key:'gdado', next:'cinematicScene', nextData:{key:'final', next: 'JaviMenu'}});
                 }
             }
@@ -155,6 +151,5 @@ export default class GDScene extends Phaser.Scene {
         // Resetea la posicion del Crocodelo
         this.cocodrile2.setPosition(this.scale.width/4, this.scale.height*3/4);
         this.cocodrile2.body.setVelocityX(0);
-        this.impactSound.stop();
     }
 }
